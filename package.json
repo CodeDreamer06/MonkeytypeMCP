@@ -1,6 +1,6 @@
 {
   "name": "monkeytype-mcp",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "An MCP server for monkeytype.com API that exposes tools for LLM interaction",
   "main": "server.js",
   "type": "module",

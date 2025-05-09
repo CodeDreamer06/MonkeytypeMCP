@@ -30,7 +30,9 @@ const GetTagsSchema = BaseApiSchema.extend({});
 
 const GetStatsSchema = BaseApiSchema.extend({});
 
-const GetProfileSchema = BaseApiSchema.extend({});
+const GetProfileSchema = BaseApiSchema.extend({
+  uidOrName: z.string().describe("The UID or username of the user whose profile is to be fetched.")
+});
 
 const SendForgotPasswordEmailSchema = BaseApiSchema.extend({
   email: z.string().email().describe("Email address to send password reset link")
@@ -300,7 +302,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Add required mode parameter
         const params = {
           mode: args.mode || "time", // Default to time mode if not specified
-          mode2: args.mode2 || "15" // Default to 15 seconds if not specified
+          mode2: args.mode2 || "15" // Default to 15 seconds if not specified (confirmed from previous change)
         };
         
         const result = await callMonkeyTypeApi('/users/personalBests', 'GET', apiKey, params);
@@ -324,7 +326,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       
       case "get_profile": {
-        const result = await callMonkeyTypeApi('/users/profile', 'GET', apiKey, {}); // Pass empty params object
+        if (!args.uidOrName) {
+          throw new Error('The uidOrName parameter is required for get_profile.');
+        }
+        const result = await callMonkeyTypeApi(`/users/${args.uidOrName}/profile`, 'GET', apiKey, {}); // Pass empty params object
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
