@@ -1,86 +1,84 @@
-# MonkeyType API MCP Server
+# MonkeyType MCP Server
 
-This is a Model Context Protocol (MCP) server that provides access to all endpoints of the [MonkeyType API](https://api.monkeytype.com/docs/). The server acts as a proxy between clients and the MonkeyType API, handling authentication and requests.
+This is a Model Context Protocol (MCP) server that provides access to all endpoints of the [MonkeyType API](https://api.monkeytype.com/docs/). The server exposes MCP tools that allow Large Language Models (LLMs) to interact with the MonkeyType API.
 
 ## Features
 
-- Exposes all MonkeyType API endpoints
-- Easy-to-use RESTful interface
-- Handles authentication with ApeKey
-- Proper error handling
+- Exposes all MonkeyType API endpoints as MCP tools
+- Compatible with any LLM that supports the Model Context Protocol
+- Simple API key-based authentication per tool call
+- Comprehensive error handling
 - Rate limit awareness (respects MonkeyType's rate limits)
 
-## API Endpoints
+## Installation
 
-The server exposes the following MonkeyType API endpoints:
+### Using npx (Recommended)
 
-### Users
-- `GET /users/check-name/:name` - Check if a username is available
-- `GET /users/personalBests` - Get user's personal bests
-- `GET /users/tags` - Get user's tags
-- `GET /users/stats` - Get user's stats
-- `GET /users/profile` - Get user's profile
-- `POST /users/forgotPassword` - Send forgot password email
-- `GET /users/activity/current` - Get current test activity
-- `GET /users/streak` - Get user's streak
+The easiest way to run the server is using npx:
 
-### Test Results
-- `GET /results` - Get up to 1000 test results
-- `GET /results/:resultId` - Get result by ID
-- `GET /results/last` - Get last result
+```bash
+npx monkeytype-mcp
+```
 
-### Public
-- `GET /public/speedHistogram` - Get speed histogram
-- `GET /public/typingStats` - Get typing stats
+This will download and run the latest version of the server directly.
 
-### Leaderboards
-- `GET /leaderboards` - Get leaderboard
-- `GET /leaderboards/rank` - Get leaderboard rank
-- `GET /leaderboards/daily` - Get daily leaderboard
-- `GET /leaderboards/weeklyXp` - Get weekly XP leaderboard
+### Global Installation
 
-### PSAs
-- `GET /psas` - Get PSAs
+You can also install the package globally:
 
-### Quotes
-- `GET /quotes/submission-enabled` - Check if quote submission is enabled
+```bash
+npm install -g monkeytype-mcp
+monkeytype-mcp
+```
 
-### Server Configuration
-- `GET /configuration` - Get server configuration
+### Manual Installation
 
-## Getting Started
+If you prefer to clone the repository:
 
-### Prerequisites
+```bash
+git clone https://github.com/CodeDreamer06/Bitstorm.git
+cd Bitstorm
+npm install
+npm start
+```
 
-- Node.js (v14 or higher)
-- npm (v6 or higher)
-- A MonkeyType API key (ApeKey)
+## Available Tools
 
-### Installation
+The server exposes the following MonkeyType API endpoints as MCP tools:
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/yourusername/monkeytype-mcp-server.git
-   cd monkeytype-mcp-server
-   ```
+### User Tools
+- `check_username` - Check if a username is available
+- `get_personal_bests` - Get user's personal bests
+- `get_tags` - Get user's tags
+- `get_stats` - Get user's stats
+- `get_profile` - Get user's profile
+- `send_forgot_password_email` - Send forgot password email
+- `get_current_test_activity` - Get current test activity
+- `get_streak` - Get user's streak
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### Test Results Tools
+- `get_results` - Get up to 1000 test results
+- `get_result_by_id` - Get result by ID
+- `get_last_result` - Get last result
 
-3. Create a `.env` file in the root directory with the following content:
-   ```
-   PORT=3000
-   MONKEYTYPE_API_KEY=your_ape_key_here
-   ```
+### Public Tools
+- `get_speed_histogram` - Get speed histogram
+- `get_typing_stats` - Get typing stats
 
-4. Start the server:
-   ```bash
-   npm start
-   ```
+### Leaderboards Tools
+- `get_leaderboard` - Get leaderboard
+- `get_leaderboard_rank` - Get leaderboard rank
+- `get_daily_leaderboard` - Get daily leaderboard
+- `get_weekly_xp_leaderboard` - Get weekly XP leaderboard
 
-The server will be running at `http://localhost:3000`.
+### PSAs Tools
+- `get_psas` - Get PSAs
+
+### Quotes Tools
+- `is_submission_enabled` - Check if quote submission is enabled
+
+### Server Configuration Tools
+- `get_configuration` - Get server configuration
 
 ## How to Get Your MonkeyType API Key (ApeKey)
 
@@ -94,23 +92,56 @@ To get your own MonkeyType API key (ApeKey), follow these steps:
 6. Give your key a name (e.g., "MCP Server")
 7. Select the appropriate scopes based on what endpoints you need to access
 8. Click "Generate"
-9. Copy the generated key and add it to your `.env` file
+9. Copy the generated key
 
 **Important**: Keep your API key secure and never share it publicly.
 
-## Using the MCP Server
+## Using the MCP Server with LLMs
 
-To use this server, you need to include your MonkeyType API key (ApeKey) in the request. There are two ways to do this:
+To use this server with an LLM, you'll need to configure the LLM to use this server for MCP tool calls. Each tool call requires providing the MonkeyType API key (ApeKey) as the `apiKey` parameter.
 
-1. Add the key as an `x-api-key` header:
-   ```
-   curl -H "x-api-key: YOUR_APE_KEY" http://localhost:3000/users/profile
-   ```
+### Example Tool Call
 
-2. Include the key as a query parameter:
-   ```
-   curl http://localhost:3000/users/profile?apiKey=YOUR_APE_KEY
-   ```
+```json
+{
+  "name": "get_configuration",
+  "arguments": {
+    "apiKey": "YOUR_MONKEYTYPE_API_KEY"
+  }
+}
+```
+
+### Integration with LLM Platforms
+
+To integrate this server with LLM platforms like OpenAI, Anthropic, or others:
+
+1. Start the MCP server using one of the installation methods above
+2. Configure your LLM platform to use this server as an MCP tool provider
+3. Pass the server's stdio as the communication channel
+
+### VS Code Integration
+
+To use this MCP server in VS Code:
+
+1. Open VS Code settings
+2. Search for "MCP Server"
+3. Add a new MCP server with the following configuration:
+   - Name: MonkeyType MCP
+   - Command: `npx monkeytype-mcp`
+   - Type: Standard Input/Output (stdio)
+
+## Publishing
+
+If you're making changes to this server and want to publish your own version:
+
+```bash
+npm login
+npm publish
+```
+
+## GitHub Repository
+
+This project is hosted on GitHub at [https://github.com/CodeDreamer06/Bitstorm](https://github.com/CodeDreamer06/Bitstorm).
 
 ## License
 
