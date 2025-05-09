@@ -100,6 +100,11 @@ To get your own MonkeyType API key (ApeKey), follow these steps:
 
 To use this server with an LLM, you'll need to configure the LLM to use this server for MCP tool calls. You must provide your MonkeyType API key (ApeKey) by setting the `MONKEYTYPE_API_KEY` environment variable in your MCP server configuration.
 
+### Environment Variables
+
+-   `MONKEYTYPE_API_KEY`: (Required) Your MonkeyType API key. You can obtain this from your account settings on monkeytype.com.
+-   `MONKEYTYPE_USERNAME`: (Optional) Your MonkeyType username or UID. This can be used by certain tools (like `get_profile`) as a default or when specific keywords are used.
+
 ### Example Tool Call
 
 ```json
@@ -154,6 +159,56 @@ To use this MCP server in VS Code:
    - Name: MonkeyType MCP
    - Command: `npx monkeytype-mcp`
    - Type: Standard Input/Output (stdio)
+
+## Available Tools
+
+The server exposes the following MonkeyType API endpoints as MCP tools:
+
+### User Tools
+- `check_username` - Check if a username is available
+- `get_personal_bests` - Get user's personal bests
+- `get_tags` - Get user's tags
+- `get_stats` - Get user's stats
+- `get_profile` - Get user's profile
+- `send_forgot_password_email` - Send forgot password email
+- `get_current_test_activity` - Get current test activity
+- `get_streak` - Get user's streak
+
+#### `get_profile`
+
+Fetches a user's public profile.
+
+**Parameters:**
+
+*   `uidOrName` (string, optional): The UID or username of the user whose profile is to be fetched.
+    *   If you provide a specific username or UID, that user's profile will be fetched.
+    *   You can use keywords like "me", "self", "current", or "my". If one of these keywords is used, the tool will use the `MONKEYTYPE_USERNAME` environment variable (if set).
+    *   If this parameter is omitted entirely, the tool will also attempt to use the `MONKEYTYPE_USERNAME` environment variable (if set).
+    *   If the `uidOrName` parameter is omitted (or a keyword is used) and the `MONKEYTYPE_USERNAME` environment variable is not set, an error will occur.
+
+### Test Results Tools
+- `get_results` - Get up to 1000 test results
+- `get_result_by_id` - Get result by ID
+- `get_last_result` - Get last result
+
+### Public Tools
+- `get_speed_histogram` - Get speed histogram
+- `get_typing_stats` - Get typing stats
+
+### Leaderboards Tools
+- `get_leaderboard` - Get leaderboard
+- `get_leaderboard_rank` - Get leaderboard rank
+- `get_daily_leaderboard` - Get daily leaderboard
+- `get_weekly_xp_leaderboard` - Get weekly XP leaderboard
+
+### PSAs Tools
+- `get_psas` - Get PSAs
+
+### Quotes Tools
+- `is_submission_enabled` - Check if quote submission is enabled
+
+### Server Configuration Tools
+- `get_configuration` - Get server configuration
 
 ## Publishing
 

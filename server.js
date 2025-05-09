@@ -31,7 +31,7 @@ const GetTagsSchema = BaseApiSchema.extend({});
 const GetStatsSchema = BaseApiSchema.extend({});
 
 const GetProfileSchema = BaseApiSchema.extend({
-  uidOrName: z.string().describe("The UID or username of the user whose profile is to be fetched.")
+  uidOrName: z.string().optional().describe("The UID or username of the user. If omitted or set to a keyword like 'me', 'self', 'current', or 'my', the value from the MONKEYTYPE_USERNAME environment variable will be used.")
 });
 
 const SendForgotPasswordEmailSchema = BaseApiSchema.extend({
@@ -326,10 +326,32 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       
       case "get_profile": {
-        if (!args.uidOrName) {
-          throw new Error('The uidOrName parameter is required for get_profile.');
+        let targetUidOrName;
+        const keywordsForCurrentUser = ["me", "self", "current", "my"];
+
+        if (args.uidOrName) {
+          if (keywordsForCurrentUser.includes(args.uidOrName.toLowerCase())) {
+            targetUidOrName = process.env.MONKEYTYPE_USERNAME;
+            if (!targetUidOrName) {
+              throw new Error('uidOrName specified as current user, but MONKEYTYPE_USERNAME environment variable is not set.');
+            }
+          } else {
+            targetUidOrName = args.uidOrName; // Use the explicitly provided uidOrName
+          }
+        } else {
+          // No uidOrName argument provided, try to use the environment variable
+          targetUidOrName = process.env.MONKEYTYPE_USERNAME;
+          if (!targetUidOrName) {
+            throw new Error('uidOrName parameter is required, or MONKEYTYPE_USERNAME environment variable must be set.');
+          }
         }
-        const result = await callMonkeyTypeApi(`/users/${args.uidOrName}/profile`, 'GET', apiKey, {}); // Pass empty params object
+
+        // Final check to ensure targetUidOrName is a non-empty string
+        if (!targetUidOrName || typeof targetUidOrName !== 'string' || targetUidOrName.trim() === '') {
+            throw new Error('Could not determine a valid UID/username. Please provide the uidOrName parameter or set the MONKEYTYPE_USERNAME environment variable with a non-empty value.');
+        }
+
+        const result = await callMonkeyTypeApi(`/users/${targetUidOrName}/profile`, 'GET', apiKey, {});
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
