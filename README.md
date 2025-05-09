@@ -36,8 +36,8 @@ monkeytype-mcp
 If you prefer to clone the repository:
 
 ```bash
-git clone https://github.com/CodeDreamer06/Bitstorm.git
-cd Bitstorm
+git clone https://github.com/CodeDreamer06/MonkeytypeMCP.git
+cd MonkeytypeMCP
 npm install
 npm start
 ```
@@ -119,6 +119,40 @@ To integrate this server with LLM platforms like OpenAI, Anthropic, or others:
 2. Configure your LLM platform to use this server as an MCP tool provider
 3. Pass the server's stdio as the communication channel
 
+## IDE Integration
+
+### Method 1: CLI Installation (Recommended)
+
+One command to install and configure MonkeyType MCP for your IDE:
+
+```bash
+npx @21st-dev/cli@latest install monkeytype-mcp
+```
+
+Supported clients: cursor, windsurf, cline, claude
+
+### Method 2: Manual Configuration
+
+If you prefer manual setup, add this to your IDE's MCP config file:
+
+```json
+{
+  "mcpServers": {
+    "monkeytype": {
+      "command": "npx",
+      "args": ["-y", "monkeytype-mcp"]
+    }
+  }
+}
+```
+
+### Config file locations:
+
+- Cursor: `~/.cursor/mcp.json`
+- Windsurf: `~/.codeium/windsurf/mcp_config.json`
+- Cline: `~/.cline/mcp_config.json`
+- Claude: `~/.claude/mcp_config.json`
+
 ### VS Code Integration
 
 To use this MCP server in VS Code:
@@ -141,7 +175,7 @@ npm publish
 
 ## GitHub Repository
 
-This project is hosted on GitHub at [https://github.com/CodeDreamer06/Bitstorm](https://github.com/CodeDreamer06/Bitstorm).
+This project is hosted on GitHub at [https://github.com/CodeDreamer06/MonkeytypeMCP](https://github.com/CodeDreamer06/MonkeytypeMCP).
 
 ## License
 

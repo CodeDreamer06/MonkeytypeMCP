@@ -25,12 +25,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/CodeDreamer06/Bitstorm.git"
+    "url": "git+https://github.com/CodeDreamer06/MonkeytypeMCP.git"
   },
   "bugs": {
-    "url": "https://github.com/CodeDreamer06/Bitstorm/issues"
+    "url": "https://github.com/CodeDreamer06/MonkeytypeMCP/issues"
   },
-  "homepage": "https://github.com/CodeDreamer06/Bitstorm#readme",
+  "homepage": "https://github.com/CodeDreamer06/MonkeytypeMCP#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^0.1.0",
     "axios": "^1.6.2",
