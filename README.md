@@ -121,19 +121,9 @@ To integrate this server with LLM platforms like OpenAI, Anthropic, or others:
 
 ## IDE Integration
 
-### Method 1: CLI Installation (Recommended)
+### MCP Configuration
 
-One command to install and configure MonkeyType MCP for your IDE:
-
-```bash
-npx @21st-dev/cli@latest install monkeytype-mcp
-```
-
-Supported clients: cursor, windsurf, cline, claude
-
-### Method 2: Manual Configuration
-
-If you prefer manual setup, add this to your IDE's MCP config file:
+To add MonkeyType MCP to your IDE, add this to your IDE's MCP config file:
 
 ```json
 {
