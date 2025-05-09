@@ -14,11 +14,11 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 const MONKEYTYPE_API_BASE_URL = 'https://api.monkeytype.com';
 
 // Schemas for Tool Inputs
-const ApiKeySchema = z.string().describe("MonkeyType API key (ApeKey)");
+const ApiKeySchema = z.string().optional().describe("MonkeyType API key (ApeKey). If not provided, will use MONKEYTYPE_API_KEY environment variable.");
 
 // Base schema that all tools will extend
 const BaseApiSchema = z.object({
-  apiKey: ApiKeySchema,
+  apiKey: ApiKeySchema.optional(),
 });
 
 // User tools
@@ -277,10 +277,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const { name, arguments: args } = request.params;
 
-    // Extract the API key for all calls
-    const apiKey = args.apiKey;
+    // Extract the API key for all calls - first check args, then environment variable
+    const apiKey = args.apiKey || process.env.MONKEYTYPE_API_KEY;
     if (!apiKey) {
-      throw new Error("API key is required for all MonkeyType API calls");
+      throw new Error("API key is required either as a parameter or as MONKEYTYPE_API_KEY environment variable");
     }
 
     // Handle each tool

@@ -98,11 +98,21 @@ To get your own MonkeyType API key (ApeKey), follow these steps:
 
 ## Using the MCP Server with LLMs
 
-To use this server with an LLM, you'll need to configure the LLM to use this server for MCP tool calls. Each tool call requires providing the MonkeyType API key (ApeKey) as the `apiKey` parameter.
+To use this server with an LLM, you'll need to configure the LLM to use this server for MCP tool calls. You can provide the MonkeyType API key (ApeKey) in two ways:
+
+1. **Environment Variable (Recommended)**: Set the `MONKEYTYPE_API_KEY` environment variable in your MCP server configuration
+2. **Parameter**: Provide the API key as the `apiKey` parameter with each tool call
 
 ### Example Tool Call
 
 ```json
+// Option 1: Using environment variable (no apiKey parameter needed)
+{
+  "name": "get_configuration",
+  "arguments": {}
+}
+
+// Option 2: Providing apiKey parameter directly
 {
   "name": "get_configuration",
   "arguments": {
@@ -130,7 +140,10 @@ To add MonkeyType MCP to your IDE, add this to your IDE's MCP config file:
   "mcpServers": {
     "monkeytype": {
       "command": "sh",
-      "args": ["-c", "cd $(mktemp -d) && npm install monkeytype-mcp && npx monkeytype-mcp"]
+      "args": ["-c", "cd $(mktemp -d) && npm install monkeytype-mcp && npx monkeytype-mcp"],
+      "env": {
+        "MONKEYTYPE_API_KEY": "YOUR_APE_KEY_HERE"
+      }
     }
   }
 }
