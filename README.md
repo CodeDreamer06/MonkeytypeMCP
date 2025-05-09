@@ -129,8 +129,8 @@ To add MonkeyType MCP to your IDE, add this to your IDE's MCP config file:
 {
   "mcpServers": {
     "monkeytype": {
-      "command": "npx",
-      "args": ["-y", "monkeytype-mcp"]
+      "command": "sh",
+      "args": ["-c", "cd $(mktemp -d) && npm install monkeytype-mcp && npx monkeytype-mcp"]
     }
   }
 }

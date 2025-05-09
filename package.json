@@ -1,6 +1,6 @@
 {
   "name": "monkeytype-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An MCP server for monkeytype.com API that exposes tools for LLM interaction",
   "main": "server.js",
   "type": "module",
@@ -32,7 +32,7 @@
   },
   "homepage": "https://github.com/CodeDreamer06/MonkeytypeMCP#readme",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^0.1.0",
+    "@modelcontextprotocol/sdk": "^1.11.1",
     "axios": "^1.6.2",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.22.3"
