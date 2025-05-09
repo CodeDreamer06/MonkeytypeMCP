@@ -13,13 +13,8 @@ import { zodToJsonSchema } from "zod-to-json-schema";
 
 const MONKEYTYPE_API_BASE_URL = 'https://api.monkeytype.com';
 
-// Schemas for Tool Inputs
-const ApiKeySchema = z.string().optional().describe("MonkeyType API key (ApeKey). If not provided, will use MONKEYTYPE_API_KEY environment variable.");
-
-// Base schema that all tools will extend
-const BaseApiSchema = z.object({
-  apiKey: ApiKeySchema.optional(),
-});
+// Base schema that all tools will extend - no API key parameter, only using environment variable
+const BaseApiSchema = z.object({});
 
 // User tools
 const CheckNameSchema = BaseApiSchema.extend({
@@ -277,10 +272,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const { name, arguments: args } = request.params;
 
-    // Extract the API key for all calls - first check args, then environment variable
-    const apiKey = args.apiKey || process.env.MONKEYTYPE_API_KEY;
+    // Extract the API key from environment variable only
+    const apiKey = process.env.MONKEYTYPE_API_KEY;
     if (!apiKey) {
-      throw new Error("API key is required either as a parameter or as MONKEYTYPE_API_KEY environment variable");
+      throw new Error("MONKEYTYPE_API_KEY environment variable is required. Please set it in your MCP server configuration.");
     }
 
     // Handle each tool
