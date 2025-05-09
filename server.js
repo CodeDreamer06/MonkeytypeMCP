@@ -23,7 +23,7 @@ const CheckNameSchema = BaseApiSchema.extend({
 
 const GetPersonalBestsSchema = BaseApiSchema.extend({
   mode: z.string().optional().describe("Mode for personal bests (time, words, quote, zen). Defaults to 'time'"),
-  mode2: z.string().optional().describe("Secondary mode parameter (e.g., 15, 60 for time mode). Defaults to '60'")
+  mode2: z.string().optional().describe("Secondary mode parameter for time mode (e.g., 15, 30, 60, 120). Defaults to '15'")
 });
 
 const GetTagsSchema = BaseApiSchema.extend({});
@@ -300,7 +300,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Add required mode parameter
         const params = {
           mode: args.mode || "time", // Default to time mode if not specified
-          mode2: args.mode2 || "60" // Default to 60 seconds if not specified
+          mode2: args.mode2 || "15" // Default to 15 seconds if not specified
         };
         
         const result = await callMonkeyTypeApi('/users/personalBests', 'GET', apiKey, params);
@@ -324,7 +324,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       
       case "get_profile": {
-        const result = await callMonkeyTypeApi('/users/profile', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/users/profile', 'GET', apiKey, {}); // Pass empty params object
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
