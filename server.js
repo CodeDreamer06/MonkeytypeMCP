@@ -54,17 +54,21 @@ const GetResultByIdSchema = BaseApiSchema.extend({
 const GetLastResultSchema = BaseApiSchema.extend({});
 
 // Public tools
-const GetSpeedHistogramSchema = BaseApiSchema.extend({});
+const GetSpeedHistogramSchema = BaseApiSchema.extend({
+  language: z.string().describe("Target language for the speed histogram (e.g., 'english')"),
+  mode: z.enum(["time", "words", "quote", "custom", "zen"]).describe("Typing mode (e.g., 'time', 'words')"),
+  mode2: z.string().describe("Secondary mode parameter (e.g., '60' for time mode)")
+});
 
 const GetTypingStatsSchema = BaseApiSchema.extend({});
 
 // Leaderboards tools
 const GetLeaderboardSchema = BaseApiSchema.extend({
-  language: z.string().describe("Language for the leaderboard"),
-  mode: z.string().describe("Mode for the leaderboard (time, words, quote, zen)"),
-  mode2: z.string().describe("Secondary mode parameter (e.g., 15, 60, etc.)"),
-  skip: z.number().optional().describe("Number of entries to skip"),
-  limit: z.number().optional().describe("Number of entries to return")
+  language: z.string().describe("Target language for the leaderboard"),
+  mode: z.enum(["time", "words", "quote", "custom", "zen"]).describe("Typing mode for the leaderboard"),
+  mode2: z.string().describe("Secondary mode parameter"),
+  page: z.number().int().min(0).optional().describe("Page number, 0-indexed. Default 0."),
+  pageSize: z.number().int().min(10).max(200).optional().describe("Number of entries per page. Default 50, min 10, max 200.")
 });
 
 const GetLeaderboardRankSchema = BaseApiSchema.extend({
@@ -378,7 +382,13 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       
       // Public Tools
       case "get_speed_histogram": {
-        const result = await callMonkeyTypeApi('/public/speedHistogram', 'GET', apiKey);
+        const params = { 
+          language: args.language,
+          mode: args.mode,
+          mode2: args.mode2 
+        };
+        
+        const result = await callMonkeyTypeApi('/public/speedHistogram', 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -399,8 +409,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           mode2: args.mode2
         };
         
-        if (args.skip) params.skip = args.skip;
-        if (args.limit) params.limit = args.limit;
+        if (args.page !== undefined) params.page = args.page;
+        if (args.pageSize !== undefined) params.pageSize = args.pageSize;
         
         const result = await callMonkeyTypeApi('/leaderboards', 'GET', apiKey, params);
         return {
