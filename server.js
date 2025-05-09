@@ -285,7 +285,8 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       // User Tools
       case "check_username": {
-        const result = await callMonkeyTypeApi(`/users/check-name/${args.name}`, 'GET', apiKey);
+        const params = { name: args.name };
+        const result = await callMonkeyTypeApi(`/users/checkname`, 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
