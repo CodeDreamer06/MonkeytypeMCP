@@ -21,7 +21,10 @@ const CheckNameSchema = BaseApiSchema.extend({
   name: z.string().describe("Username to check for availability")
 });
 
-const GetPersonalBestsSchema = BaseApiSchema.extend({});
+const GetPersonalBestsSchema = BaseApiSchema.extend({
+  mode: z.string().optional().describe("Mode for personal bests (time, words, quote, zen). Defaults to 'time'"),
+  mode2: z.string().optional().describe("Secondary mode parameter (e.g., 15, 60 for time mode). Defaults to '60'")
+});
 
 const GetTagsSchema = BaseApiSchema.extend({});
 
@@ -282,42 +285,50 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
     switch (name) {
       // User Tools
       case "check_username": {
-        const result = await callMonkeyTypeApi(`/users/check-name/${args.name}`, 'GET', apiKey);
+        const result = await callMonkeyTypeApi(`/api/v1/users/check-name/${args.name}`, 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_personal_bests": {
-        const result = await callMonkeyTypeApi('/users/personalBests', 'GET', apiKey);
+        // Add required mode parameter
+        const params = {
+          mode: args.mode || "time", // Default to time mode if not specified
+          mode2: args.mode2 || "60" // Default to 60 seconds if not specified
+        };
+        
+        // The correct endpoint is /api/v1/users/personalBests
+        const result = await callMonkeyTypeApi('/api/v1/users/personalBests', 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_tags": {
-        const result = await callMonkeyTypeApi('/users/tags', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/users/tags', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_stats": {
-        const result = await callMonkeyTypeApi('/users/stats', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/users/stats', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_profile": {
-        const result = await callMonkeyTypeApi('/users/profile', 'GET', apiKey);
+        // The correct endpoint is /api/v1/users/profile
+        const result = await callMonkeyTypeApi('/api/v1/users/profile', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "send_forgot_password_email": {
-        const result = await callMonkeyTypeApi('/users/forgotPassword', 'POST', apiKey, {}, {
+        const result = await callMonkeyTypeApi('/api/v1/users/forgotPassword', 'POST', apiKey, {}, {
           email: args.email
         });
         return {
@@ -326,14 +337,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       }
       
       case "get_current_test_activity": {
-        const result = await callMonkeyTypeApi('/users/activity/current', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/users/activity/current', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_streak": {
-        const result = await callMonkeyTypeApi('/users/streak', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/users/streak', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -346,21 +357,21 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (args.offset) params.offset = args.offset;
         if (args.limit) params.limit = args.limit;
         
-        const result = await callMonkeyTypeApi('/results', 'GET', apiKey, params);
+        const result = await callMonkeyTypeApi('/api/v1/results', 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_result_by_id": {
-        const result = await callMonkeyTypeApi(`/results/${args.resultId}`, 'GET', apiKey);
+        const result = await callMonkeyTypeApi(`/api/v1/results/${args.resultId}`, 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_last_result": {
-        const result = await callMonkeyTypeApi('/results/last', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/results/last', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -368,14 +379,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       
       // Public Tools
       case "get_speed_histogram": {
-        const result = await callMonkeyTypeApi('/public/speedHistogram', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/public/speedHistogram', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
       }
       
       case "get_typing_stats": {
-        const result = await callMonkeyTypeApi('/public/typingStats', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/public/typingStats', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -392,7 +403,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (args.skip) params.skip = args.skip;
         if (args.limit) params.limit = args.limit;
         
-        const result = await callMonkeyTypeApi('/leaderboards', 'GET', apiKey, params);
+        const result = await callMonkeyTypeApi('/api/v1/leaderboards', 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -405,7 +416,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           mode2: args.mode2
         };
         
-        const result = await callMonkeyTypeApi('/leaderboards/rank', 'GET', apiKey, params);
+        const result = await callMonkeyTypeApi('/api/v1/leaderboards/rank', 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -419,7 +430,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (args.skip) params.skip = args.skip;
         if (args.limit) params.limit = args.limit;
         
-        const result = await callMonkeyTypeApi('/leaderboards/daily', 'GET', apiKey, params);
+        const result = await callMonkeyTypeApi('/api/v1/leaderboards/daily', 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -430,7 +441,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (args.skip) params.skip = args.skip;
         if (args.limit) params.limit = args.limit;
         
-        const result = await callMonkeyTypeApi('/leaderboards/weeklyXp', 'GET', apiKey, params);
+        const result = await callMonkeyTypeApi('/api/v1/leaderboards/weeklyXp', 'GET', apiKey, params);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -438,7 +449,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       
       // PSAs Tools
       case "get_psas": {
-        const result = await callMonkeyTypeApi('/psas', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/psas', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -446,7 +457,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       
       // Quotes Tools
       case "is_submission_enabled": {
-        const result = await callMonkeyTypeApi('/quotes/submission-enabled', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/quotes/submission-enabled', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
@@ -454,7 +465,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       
       // Server Configuration Tools
       case "get_configuration": {
-        const result = await callMonkeyTypeApi('/configuration', 'GET', apiKey);
+        const result = await callMonkeyTypeApi('/api/v1/configuration', 'GET', apiKey);
         return {
           content: [{ type: "text", text: JSON.stringify(result, null, 2) }],
         };
