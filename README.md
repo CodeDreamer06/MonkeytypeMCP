@@ -2,6 +2,10 @@
 
 This is a Model Context Protocol (MCP) server that provides access to all endpoints of the [MonkeyType API](https://api.monkeytype.com/docs/). The server exposes MCP tools that allow Large Language Models (LLMs) to interact with the MonkeyType API.
 
+<a href="https://glama.ai/mcp/servers/@CodeDreamer06/MonkeytypeMCP">
+  <img width="380" height="200" src="https://glama.ai/mcp/servers/@CodeDreamer06/MonkeytypeMCP/badge" alt="MonkeyType Server MCP server" />
+</a>
+
 ## Features
 
 - Exposes all MonkeyType API endpoints as MCP tools
